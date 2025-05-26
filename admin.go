@@ -14,8 +14,10 @@ import (
 
 var (
 	templates = template.Must(template.ParseFiles(
+		"templates/layout.html",
 		"templates/login.html",
-		"templates/index.html",
+		"templates/feeds.html",
+		"templates/news.html",
 	))
 	sessions = make(map[string]bool)
 	sessMu   sync.Mutex
@@ -31,9 +33,12 @@ func getEnv(key, def string) string {
 	return def
 }
 
-func StartAdminServer() {
+func startAdminServer() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/toggle", authMiddleware(toggleHandler))
+	http.HandleFunc("/feeds", authMiddleware(feedsHandler))
+	http.HandleFunc("/news", authMiddleware(newsHandler))
 	http.HandleFunc("/", authMiddleware(indexHandler))
 
 	log.Print("[admin] listening on :8081")
@@ -80,20 +85,30 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/feeds", http.StatusSeeOther)
+}
+
+func feedsHandler(w http.ResponseWriter, r *http.Request) {
 	feeds, _ := db.GetAllRss()
+	data := struct {
+		Feeds []models.RssFread
+	}{feeds}
+	templates.ExecuteTemplate(w, "feeds", data)
+}
+
+func newsHandler(w http.ResponseWriter, r *http.Request) {
 	news, _ := db.GetRecentNews(20)
 	counts, _ := db.CountNewsByStatus()
 	data := struct {
-		Feeds  []models.RssFread
 		News   []models.News
 		Counts map[string]int64
-	}{feeds, news, counts}
-	templates.ExecuteTemplate(w, "index.html", data)
+	}{news, counts}
+	templates.ExecuteTemplate(w, "news", data)
 }
 
 func toggleHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/feeds", http.StatusSeeOther)
 		return
 	}
 	idStr := r.FormValue("id")
@@ -102,5 +117,5 @@ func toggleHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		db.SetRssActive(id, activeStr == "true")
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/feeds", http.StatusSeeOther)
 }
