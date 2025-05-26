@@ -33,13 +33,14 @@ func getEnv(key, def string) string {
 	return def
 }
 
-func startAdminServer() {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+func StartAdminServer() {
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/toggle", authMiddleware(toggleHandler))
 	http.HandleFunc("/feeds", authMiddleware(feedsHandler))
 	http.HandleFunc("/news", authMiddleware(newsHandler))
-	http.HandleFunc("/", authMiddleware(indexHandler))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/feeds", http.StatusSeeOther)
+	})
 
 	log.Print("[admin] listening on :8081")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
@@ -84,16 +85,12 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/feeds", http.StatusSeeOther)
-}
-
 func feedsHandler(w http.ResponseWriter, r *http.Request) {
 	feeds, _ := db.GetAllRss()
 	data := struct {
 		Feeds []models.RssFread
 	}{feeds}
-	templates.ExecuteTemplate(w, "feeds", data)
+	templates.ExecuteTemplate(w, "layout", data)
 }
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
@@ -103,12 +100,12 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		News   []models.News
 		Counts map[string]int64
 	}{news, counts}
-	templates.ExecuteTemplate(w, "news", data)
+	templates.ExecuteTemplate(w, "layout", data)
 }
 
 func toggleHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		http.Redirect(w, r, "/feeds", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 	idStr := r.FormValue("id")
