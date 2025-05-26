@@ -43,10 +43,10 @@ type News struct {
 	MistralWight        float64   `json:"mistral_wight"`
 	Summerize           string    `json:"summerize"`
 	Sanatize            string    `json:"sanatize"`
-	Photonize           string    `json:"photonize"`
+	Phonotize           string    `json:"phonotize"`
 	PrimaryTopic        string    `json:"primary_topic"`
-	KeyRntities         string    `json:"key_entities"`
-	ConfidenceScore     string    `json:"mistral_prompt"`
+	KeyEntities         string    `json:"key_entities"`
+	ConfidenceScore     string    `json:"confidence_score"`
 	BiasScore           string    `json:"bias_score"`
 	Reasoning           string    `json:"reasoning"`
 	Category            string    `json:"category"`
