@@ -31,7 +31,7 @@ func getEnv(key, def string) string {
 	return def
 }
 
-func startAdminServer() {
+func StartAdminServer() {
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/toggle", authMiddleware(toggleHandler))
 	http.HandleFunc("/", authMiddleware(indexHandler))
