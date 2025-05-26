@@ -1,0 +1,40 @@
+<html>
+<head><title>Admin</title></head>
+<body>
+<h1>RSS Feeds</h1>
+<table border="1">
+<tr><th>Site</th><th>Active</th><th>Action</th></tr>
+{{range .Feeds}}
+<tr>
+<td>{{.Site}}</td>
+<td>{{.Active}}</td>
+<td>
+<form method="POST" action="/toggle">
+<input type="hidden" name="id" value="{{.ID}}">
+{{if .Active}}
+<input type="hidden" name="active" value="false">
+<button type="submit">Deactivate</button>
+{{else}}
+<input type="hidden" name="active" value="true">
+<button type="submit">Activate</button>
+{{end}}
+</form>
+</td>
+</tr>
+{{end}}
+</table>
+<h2>News Status</h2>
+<ul>
+{{range $k, $v := .Counts}}
+<li>{{$k}}: {{$v}}</li>
+{{end}}
+</ul>
+<h2>Latest News</h2>
+<table border="1">
+<tr><th>Title</th><th>Status</th><th>Created At</th></tr>
+{{range .News}}
+<tr><td>{{.Title}}</td><td>{{.Status}}</td><td>{{.CreatedAt}}</td></tr>
+{{end}}
+</table>
+</body>
+</html>

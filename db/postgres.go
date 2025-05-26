@@ -96,3 +96,39 @@ func UpdateOldDataCat(cat string, id uuid.UUID) {
 		panic(resultAction.Error)
 	}
 }
+
+// GetAllRss returns all RSS feeds regardless of active status
+func GetAllRss() ([]models.RssFread, error) {
+	var feeds []models.RssFread
+	err := DB.Order("site").Find(&feeds).Error
+	return feeds, err
+}
+
+// SetRssActive toggles the active field of a feed
+func SetRssActive(id uuid.UUID, active bool) error {
+	return DB.Model(&models.RssFread{}).Where("id = ?", id).Update("active", active).Error
+}
+
+// GetRecentNews returns the latest news limited by the given number
+func GetRecentNews(limit int) ([]models.News, error) {
+	var news []models.News
+	err := DB.Order("created_at desc").Limit(limit).Find(&news).Error
+	return news, err
+}
+
+// CountNewsByStatus provides aggregated counts of news by status field
+func CountNewsByStatus() (map[string]int64, error) {
+	type res struct {
+		Status string
+		Count  int64
+	}
+	var rows []res
+	if err := DB.Model(&models.News{}).Select("status, count(*) as count").Group("status").Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	m := make(map[string]int64)
+	for _, r := range rows {
+		m[r.Status] = r.Count
+	}
+	return m, nil
+}
