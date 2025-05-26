@@ -153,24 +153,30 @@ func GetArticle(rawURL string) (ArticleExpand, error) {
 func main() {
 
 	db.InitDB()
-	urls, err := db.GetActiveRss()
-	if err != nil {
-		log.Fatalf("failed to read feeds list: %v", err)
-	}
-	log.Printf("found %d feeds", len(urls))
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	parser := gofeed.NewParser()
-
-	//var articles []Article
-	for _, u := range urls {
-		arts, _ := fetchFeed(u.Site, client, parser)
+	for {
+		urls, err := db.GetActiveRss()
 		if err != nil {
-			log.Printf("warn: could not fetch %s: %v", u, err)
+			log.Printf("failed to read feeds list: %v", err)
+			time.Sleep(1 * time.Minute)
 			continue
 		}
-		HandllerartDatat(arts)
-		//articles = append(articles, arts...)
+		log.Printf("found %d feeds", len(urls))
+
+		client := &http.Client{Timeout: 10 * time.Second}
+		parser := gofeed.NewParser()
+
+		for _, u := range urls {
+			arts, err := fetchFeed(u.Site, client, parser)
+			if err != nil {
+				log.Printf("warn: could not fetch %s: %v", u.Site, err)
+				continue
+			}
+			HandllerartDatat(arts)
+		}
+
+		log.Print("[crawler] cycle complete, restarting")
+		time.Sleep(10 * time.Minute)
 	}
 }
 
@@ -215,9 +221,9 @@ func HandllerartDatat(arts []Article) {
 			NewsHash:        "",
 			Summerize:       SummerizeGet,
 			Sanatize:        SanatizeGet,
-			Photonize:       PhonotizeGet,
+			Phonotize:       PhonotizeGet,
 			PrimaryTopic:    PrimaryTopicGet,
-			KeyRntities:     KeyEntitiesGet,
+			KeyEntities:     KeyEntitiesGet,
 			ConfidenceScore: ConfidenceScoreGet,
 			BiasScore:       BiasScoreGet,
 			Reasoning:       ReasoningGet,
