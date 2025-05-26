@@ -152,7 +152,7 @@ func GetArticle(rawURL string) (ArticleExpand, error) {
 
 func main() {
 
-	db.InitDB()
+        db.InitDB()
 
 	for {
 		urls, err := db.GetActiveRss()
