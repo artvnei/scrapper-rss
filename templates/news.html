@@ -1,0 +1,17 @@
+{{define "title"}}News{{end}}
+{{define "content"}}
+<h1>News Status</h1>
+<ul>
+{{range $k, $v := .Counts}}
+<li>{{$k}}: {{$v}}</li>
+{{end}}
+</ul>
+<h2>Latest News</h2>
+<table>
+<tr><th>Title</th><th>Status</th><th>Created At</th></tr>
+{{range .News}}
+<tr><td>{{.Title}}</td><td>{{.Status}}</td><td>{{.CreatedAt}}</td></tr>
+{{end}}
+</table>
+{{end}}
+{{define "news"}}{{template "layout" .}}{{end}}

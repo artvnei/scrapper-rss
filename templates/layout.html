@@ -1,0 +1,20 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{template "title" .}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/feeds">Feeds</a>
+        <a href="/news">News</a>
+    </nav>
+</header>
+<div class="content">
+{{template "content" .}}
+</div>
+</body>
+</html>
+{{end}}
