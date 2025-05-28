@@ -1,0 +1,25 @@
+{{define "content"}}
+<h1>RSS Feeds</h1>
+<table class="table table-striped">
+  <tr><th>Site</th><th>Active</th><th>Action</th></tr>
+  {{range .Feeds}}
+  <tr>
+    <td>{{.Site}}</td>
+    <td>{{if .Active}}Yes{{else}}No{{end}}</td>
+    <td>
+      <form method="POST" action="/toggle" class="d-inline">
+        <input type="hidden" name="id" value="{{.ID}}">
+        {{if .Active}}
+        <input type="hidden" name="active" value="false">
+        <button type="submit" class="btn btn-sm btn-danger">Deactivate</button>
+        {{else}}
+        <input type="hidden" name="active" value="true">
+        <button type="submit" class="btn btn-sm btn-success">Activate</button>
+        {{end}}
+      </form>
+    </td>
+  </tr>
+  {{end}}
+</table>
+{{end}}
+{{template "layout" .}}

@@ -1,0 +1,19 @@
+{{define "content"}}
+<h1>News</h1>
+<ul class="mb-3">
+  {{range $k, $v := .Counts}}
+  <li>{{$k}}: {{$v}}</li>
+  {{end}}
+</ul>
+<table class="table table-striped">
+  <tr><th>Title</th><th>Status</th><th>Created</th></tr>
+  {{range .News}}
+  <tr>
+    <td>{{.Title}}</td>
+    <td>{{.Status}}</td>
+    <td>{{.CreatedAt}}</td>
+  </tr>
+  {{end}}
+</table>
+{{end}}
+{{template "layout" .}}

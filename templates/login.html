@@ -1,0 +1,19 @@
+{{define "content"}}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-4">
+    <h1 class="h4 mb-3">Login</h1>
+    <form method="POST" action="/login">
+      <div class="mb-3">
+        <label class="form-label">User</label>
+        <input name="username" class="form-control" autofocus>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Pass</label>
+        <input type="password" name="password" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+  </div>
+</div>
+{{end}}
+{{template "layout" .}}
