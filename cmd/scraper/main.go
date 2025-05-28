@@ -153,7 +153,11 @@ func GetArticle(rawURL string) (ArticleExpand, error) {
 func main() {
 
 	db.InitDB()
+<<<<<<< HEAD:main.go
        go StartAdminServer()
+=======
+	go StartAdminServer()
+>>>>>>> origin/main:cmd/scraper/main.go
 
 	for {
 		urls, err := db.GetActiveRss()
